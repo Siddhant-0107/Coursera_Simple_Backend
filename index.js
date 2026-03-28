@@ -1,9 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const {userRouter} = require('./routes/user');
 const {courseRouter} = require('./routes/course');
 const {adminRouter} = require('./routes/admin')
 
-require('dotenv').config();
+
 const DB_Link = process.env.DB_Link;
 console.log("DB_Link:", DB_Link);
 const mongoose = require('mongoose');

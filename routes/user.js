@@ -2,9 +2,10 @@ const {Router} = require("express");
 const userRouter = Router();
 const {z} = require('zod');
 const bcrypt = require('bcrypt');
-const {UserModel} =require("../db");
+const {UserModel, PurchaseModel} =require("../db");
 const jwt = require('jsonwebtoken');
 const JWTusersecret= process.env.JWTusersecret;
+const {UserMiddleware}= require("../middleware/user");
 
 userRouter.post('/signup',async function(req,res){
     const requiredBody = z.object({
@@ -78,11 +79,16 @@ userRouter.post('/signin',async function(req,res){
 
 
 
-userRouter.get('/my',function(req,res){
+userRouter.get('/my', UserMiddleware, async function(req,res){
 
-
+    const userId = req.userId;
+    //Check that the user has paid for the courses
+     const purchases=  await PurchaseModel.create({
+            userId
+        });
+    
      res.json({
-        message: "my endpoint"
+       purchases
     })
 });
 

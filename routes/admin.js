@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const { AdminModel, CourseModel} =require("../db");
 const jwt = require('jsonwebtoken');
 const JWTadminsecret= process.env.JWTadminsecret;
-const {adminMiddleware} = require("../middleware/admin");
+const {AdminMiddleware} = require("../middleware/admin");
 adminRouter.post('/signup',async function(req,res){
     const requiredBody = z.object({
             email: z.string().min(3).max(100).email(),
@@ -56,7 +56,8 @@ adminRouter.post('/signin',async function(req,res){
        return
         }
         else{
-           const passwordMatch = bcrypt.compare(password,user.password);
+           const passwordMatch = await bcrypt.compare(password,user.password);
+           console.log(passwordMatch);
            if(passwordMatch){
                const token= jwt.sign({
                    id: user._id.toString()
@@ -71,7 +72,7 @@ adminRouter.post('/signin',async function(req,res){
            })
         }}
 });
-adminRouter.post('/course',adminMiddleware,async function(req,res){
+adminRouter.post('/course',AdminMiddleware,async function(req,res){
     const adminId = req.userId;
     const {title, description, imageUrl, price}= req.body;
 //watch creating a web3 saas in 6 hr for image upload 
@@ -83,12 +84,12 @@ adminRouter.post('/course',adminMiddleware,async function(req,res){
         creatorId: adminId
     });
 
-    req.json({
+    res.json({
         message: "Course Created",
         courseId: course._id
     })
 });
-adminRouter.put('/course',adminMiddleware,async function(req,res){
+adminRouter.put('/course',AdminMiddleware,async function(req,res){
 
  const adminId = req.userId;
     const {title, description, imageUrl, price,courseId}= req.body;
@@ -104,20 +105,20 @@ adminRouter.put('/course',adminMiddleware,async function(req,res){
         creatorId: adminId
     });
 
-    req.json({
+    res.json({
         message: "Course updated",
         courseId: course._id
     })
 });
-adminRouter.get('/course/bulk',adminMiddleware,async function(req,res){
+adminRouter.get('/course/bulk',AdminMiddleware,async function(req,res){
    
  const adminId = req.userId;
     
-    const course = await courseModel.find({
+    const courses = await CourseModel.find({
         creatorId:  adminId
     });
 
-    req.json({
+    res.json({
         message: "Course updated",
         courses
     })
