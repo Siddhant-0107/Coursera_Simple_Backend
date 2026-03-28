@@ -1,1 +1,10 @@
 .env
+node_modiles/
+*.exe
+*.out
+*.o
+*.log
+.vscode/
+.idea/
+dist/
+build/
