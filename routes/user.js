@@ -2,7 +2,7 @@ const {Router} = require("express");
 const userRouter = Router();
 const {z} = require('zod');
 const bcrypt = require('bcrypt');
-const {UserModel, PurchaseModel} =require("../db");
+const {UserModel, PurchaseModel, CourseModel} =require("../db");
 const jwt = require('jsonwebtoken');
 const JWTusersecret= process.env.JWTusersecret;
 const {UserMiddleware}= require("../middleware/user");
@@ -83,12 +83,16 @@ userRouter.get('/my', UserMiddleware, async function(req,res){
 
     const userId = req.userId;
     //Check that the user has paid for the courses
-     const purchases=  await PurchaseModel.create({
+     const purchases=  await PurchaseModel.find({
             userId
         });
+        const course_data = await CourseModel.find({
+            _id: {$in : purchases.map(x=>x.courseId)}
+        })
     
      res.json({
-       purchases
+       purchases,
+       course_data
     })
 });
 

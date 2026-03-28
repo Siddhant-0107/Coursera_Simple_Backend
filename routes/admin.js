@@ -57,7 +57,7 @@ adminRouter.post('/signin',async function(req,res){
         }
         else{
            const passwordMatch = await bcrypt.compare(password,user.password);
-           console.log(passwordMatch);
+        //    console.log(passwordMatch);
            if(passwordMatch){
                const token= jwt.sign({
                    id: user._id.toString()
