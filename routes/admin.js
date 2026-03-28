@@ -88,14 +88,38 @@ adminRouter.post('/course',adminMiddleware,async function(req,res){
         courseId: course._id
     })
 });
-adminRouter.put('/course',adminMiddleware,function(req,res){
+adminRouter.put('/course',adminMiddleware,async function(req,res){
+
+ const adminId = req.userId;
+    const {title, description, imageUrl, price,courseId}= req.body;
+    
+    const course = await CourseModel.updateOne({
+        _id: courseId,
+        creatorId: adminId // or else druv rathi wil be able to change price of me.beasts course
+    },{
+        title: title,
+        description: description,
+        imageUrl : imageUrl,
+        price: price,
+        creatorId: adminId
+    });
+
     req.json({
-        message: "Its Working!!!"
+        message: "Course updated",
+        courseId: course._id
     })
 });
-adminRouter.get('/bulk',function(req,res){
+adminRouter.get('/course/bulk',adminMiddleware,async function(req,res){
+   
+ const adminId = req.userId;
+    
+    const course = await courseModel.find({
+        creatorId:  adminId
+    });
+
     req.json({
-        message: "Its Working!!!"
+        message: "Course updated",
+        courses
     })
 });
 
